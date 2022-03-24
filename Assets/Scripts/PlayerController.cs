@@ -5,9 +5,8 @@ namespace playerMovement
     public class PlayerController : MonoBehaviour
     {
         public ScoreController scoreController;
-        public HealthController healthController;
-        public GameOverController gameOverController;
-        public GameCompleteMenuController GameCompleteMenuController;
+        public GameCompleteMenuController gameCompleteMenuController;
+        [SerializeField] GameOverController gameOverController;
 
         public Animator animator;
 
@@ -15,6 +14,7 @@ namespace playerMovement
         public float jump;
 
         private bool isCrouch = false;
+        public bool isDead = false;
 
         private Rigidbody2D rb2d;
         private BoxCollider2D boxCollider;
@@ -32,9 +32,12 @@ namespace playerMovement
         {
             float horizontal = Input.GetAxisRaw("Horizontal");
             float vertical = Input.GetAxisRaw("Jump");
+            
+            if(!isDead) {
                 PlayerMovement(horizontal, vertical);
                 PlayerJump(horizontal, vertical);
                 Crouch();
+            }
         }
          
         private void PlayerJump(float horizontal, float vertical)
@@ -44,6 +47,7 @@ namespace playerMovement
                 {
                     animator.SetBool("Jump", true);
                     rb2d.velocity = Vector2.up * jump;
+                    JumpSound();
                 }
                 else
                 {
@@ -57,7 +61,6 @@ namespace playerMovement
             if(!isCrouch)
             {
                 animator.SetFloat("Speed", Mathf.Abs(horizontal));
-                // Horizontal character movement
                 Vector3 scale = transform.localScale;
                 if (horizontal < 0)
                 {
@@ -99,21 +102,24 @@ namespace playerMovement
         public void PickUpKey()
         {            
             Debug.Log("Player picked up the key");
-            scoreController.IncrementScore(10);           
+            scoreController.IncrementScore(10);
+            SoundManager.Instance.Play(Sounds.KeyPickup);
         }
 
         public void KillPlayer()
         {
+            isDead = true;
             Debug.Log("Player Killed");
-            gameOverController.GameOver();
-            this.enabled = false;
+            animator.SetTrigger("Death");
+            SoundManager.Instance.Play(Sounds.PlayerDeath);
+
+            gameOverController.Invoke("GameOver", 1f);
         }
 
         public void LevelComplete()
         {
             Debug.Log("Level Complete");
-            GameCompleteMenuController.LevelComplete();
-            this.enabled = false;
+            gameCompleteMenuController.LevelComplete();
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -121,9 +127,20 @@ namespace playerMovement
             if ((collision.gameObject.CompareTag("Death")) || collision.gameObject.GetComponent<PlayerController>() != null)
             {
                 Debug.Log("Player Died");
+                SoundManager.Instance.Play(Sounds.PlayerDeath);
                 Destroy(gameObject);
                 RespawnLevel.instance.Respawn();
             }
+        }
+
+        public void MovementSound()
+        {
+            SoundManager.Instance.Play(Sounds.PlayerMove);
+        }
+
+        public void JumpSound()
+        {
+            SoundManager.Instance.Play(Sounds.PlayerJump);
         }
     }
 }

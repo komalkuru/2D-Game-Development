@@ -20,11 +20,13 @@ public class GameCompleteMenuController : MonoBehaviour
     {
         Debug.Log("Reloading Scene...");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        SoundManager.Instance.Play(Sounds.ButtonClick);
     }
 
     public void BackToLobby()
     {
         Debug.Log("Reloading the lobby Scene...");
         SceneManager.LoadScene(0);
+        SoundManager.Instance.Play(Sounds.ButtonClick);
     }
 }

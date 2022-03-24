@@ -291,6 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29a35daa18de70d45a66e92dcc32a3b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameCompleteMenuController: {fileID: 0}
 --- !u!61 &2940011204273944307
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4039,6 +4040,7 @@ MonoBehaviour:
   scoreController: {fileID: 2940011206068226256}
   healthController: {fileID: 2940011206233861428}
   gameOverController: {fileID: 2940011204147444934}
+  GameCompleteMenuController: {fileID: 0}
   animator: {fileID: 5822304331978728069}
   Speed: 20
   jump: 1000
@@ -4109,14 +4111,6 @@ Camera:
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &4012471900149174558
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4012471900149174559}
-  m_Enabled: 1
 --- !u!1 &4012471900149174559
 GameObject:
   m_ObjectHideFlags: 0
@@ -4127,7 +4121,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4012471900149174755}
   - component: {fileID: 4012471900149174556}
-  - component: {fileID: 4012471900149174558}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera

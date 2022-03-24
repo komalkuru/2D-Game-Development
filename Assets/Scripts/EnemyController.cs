@@ -1,21 +1,21 @@
-﻿using System.Collections;
-using UnityEngine;
-using playerMovement;
+﻿using UnityEngine;
 
-/// <summary>
-/// Player Death animation applied when the player touches the enemy.
-/// Added enemy patrol
-/// </summary>
 public class EnemyController : MonoBehaviour
 {
-    Animator animator;
-    public PlayerController playerController;
     public HealthController healthController;
 
     public float walkSpeed;
     public float distance;
     public bool moveRight = true;
     public Transform groundDetectionPoint;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            healthController.LoseLife();
+        }
+    }
 
     private void Update()
     {
@@ -36,28 +36,5 @@ public class EnemyController : MonoBehaviour
                 moveRight = true;
             }
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.GetComponent<PlayerController>() != null)
-        {
-            animator = collision.gameObject.GetComponent<Animator>();
-
-            if (playerController != null)
-            {
-                healthController.LoseLife();
-            }
-            if (healthController.livesRemaining == 0)
-            {
-                StartCoroutine(PlayDeathCoroutine());
-            }
-        }
-    }
-    IEnumerator PlayDeathCoroutine()
-    {
-        animator.Play("Player_Death");
-        yield return new WaitForSeconds(0.60f);
-        playerController.KillPlayer();
     }
 }

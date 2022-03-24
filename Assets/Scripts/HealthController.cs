@@ -1,25 +1,27 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using playerMovement;
 
 public class HealthController: MonoBehaviour
 {
-    public Image[] lives;
-    public int livesRemaining;
+    public PlayerController playerController;
+    public Image[] livesCount;
+    private int livesRemaining = 3;
 
     public void LoseLife()
     {
-        if(livesRemaining == 0)
+        if (livesRemaining > 0)
         {
-            return;
-        }
+            livesCount[--livesRemaining].enabled = false;
+            SoundManager.Instance.Play(Sounds.EnemyCollision);
 
-        livesRemaining--;
-
-        lives[livesRemaining].enabled = false;
-
-        if(livesRemaining == 0)
-        {
-            Debug.Log("You Lost");
+            if (livesRemaining == 0)
+            {
+                Debug.Log("You Lost");
+                playerController.KillPlayer();                
+            }
         }
     }
 }
+
+

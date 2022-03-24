@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using Assests.Scripts.Level;
-using UnityEngine.UI;
 
 public class LevelCompleteController : MonoBehaviour
 {
     [SerializeField] GameCompleteMenuController gameCompleteMenuController;
+    [SerializeField] ParticleController playerWin;
 
     void OnTriggerEnter2D(Collider2D collision) {
         
@@ -13,8 +12,11 @@ public class LevelCompleteController : MonoBehaviour
         {
             //Game is over           
             Debug.Log("Level finished by the player");
+            playerWin.PlayWinEffect();
+            SoundManager.Instance.Play(Sounds.LevelWin);
             LevelManager.Instance.MarkCurrentLevelComplete();
-            gameCompleteMenuController.LevelComplete();
+            gameCompleteMenuController.Invoke("LevelComplete", 3f);
+            //gameCompleteMenuController.LevelComplete();
         }
     }
 }
