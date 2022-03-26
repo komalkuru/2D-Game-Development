@@ -86,6 +86,7 @@
     <Compile Include="Assets\2DGamekit\Utilities\DefaultPlayables\Video\VideoScriptPlayableTrack.cs" />
     <Compile Include="Assets\2DGamekit\Utilities\Standard Assets\Effects\ImageEffects\Scripts\BlurOptimized.cs" />
     <Compile Include="Assets\2DGamekit\Utilities\Standard Assets\Effects\ImageEffects\Scripts\PostEffectsBase.cs" />
+    <Compile Include="Assets\Scripts\EnemyBehaviour.cs" />
     <Compile Include="Assets\Scripts\EnemyController.cs" />
     <Compile Include="Assets\Scripts\GameCompleteMenuController.cs" />
     <Compile Include="Assets\Scripts\GameOverController.cs" />
