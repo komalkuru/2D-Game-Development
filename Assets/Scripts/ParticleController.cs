@@ -9,7 +9,6 @@ public class ParticleController : MonoBehaviour
     public void PlayWinEffect()
     {
         particles.SetActive(true);
-        //Invoke("StopWinEffect", 3f);
     }
 
 }
