@@ -1,112 +1,146 @@
-﻿using UnityEngine.SceneManagement;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace playerMovement 
 {
-    public class PlayerController : MonoBehaviour 
+    public class PlayerController : MonoBehaviour
     {
-        Animator animator;
         public ScoreController scoreController;
-        [SerializeField] private Rigidbody2D rb;
-        [SerializeField] private BoxCollider2D box_collider;
-        [SerializeField] private float speed;
-        [SerializeField] private float jump;
-        private float horizontal;
-        private float vertical;
+        public GameCompleteMenuController gameCompleteMenuController;
+        [SerializeField] GameOverController gameOverController;
+
+        public Animator animator;
+
+        public float Speed;
+        public float jump;
+
+        private bool isCrouch = false;
+        public bool isDead = false;
+
+        private Rigidbody2D rb2d;
+        private BoxCollider2D boxCollider;
+
+        [SerializeField] private LayerMask platformLayerMask;
 
         private void Awake()
         {
-            Debug.Log("Player controller awake");
-            
-            rb = gameObject.GetComponent<Rigidbody2D>();
-            animator = GetComponent<Animator>();
+            rb2d = gameObject.GetComponent<Rigidbody2D>();
+            boxCollider = gameObject.GetComponent<BoxCollider2D>();
+            animator = gameObject.GetComponent<Animator>();
         }
 
-        public void PickUpKey() {
-        Debug.Log("Player picked up the key");
-        scoreController.IncrementScore(10);
+        private void Update()
+        {
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Jump");
+            
+            if(!isDead) {
+                PlayerMovement(horizontal, vertical);
+                PlayerJump(horizontal, vertical);
+                Crouch();
+            }
+        }
+         
+        private void PlayerJump(float horizontal, float vertical)
+        {
+                          
+                if (vertical > 0 && IsGrounded() && !isCrouch)
+                {
+                    animator.SetBool("Jump", true);
+                    rb2d.velocity = Vector2.up * jump;
+                    JumpSound();
+                }
+                else
+                {
+                    animator.SetBool("Jump", false);
+                }
+               
+        }
+
+        private void PlayerMovement(float horizontal, float vertical)
+        {
+            if(!isCrouch)
+            {
+                animator.SetFloat("Speed", Mathf.Abs(horizontal));
+                Vector3 scale = transform.localScale;
+                if (horizontal < 0)
+                {
+                    scale.x = -1f * Mathf.Abs(scale.x);
+                }
+                else if (horizontal > 0)
+                {
+                    scale.x = Mathf.Abs(scale.x);
+                }
+                transform.localScale = scale;
+
+                Vector3 position = transform.position;
+                position.x += horizontal * Speed * Time.deltaTime;
+                transform.position = position;                
+            }
+        }
+
+        private void Crouch()
+        {
+            isCrouch = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl));
+            if (isCrouch)
+            {
+                animator.SetBool("Crouch", true);
+            }
+            else
+            {
+                animator.SetBool("Crouch", false);
+            }
+        }
+
+        private bool IsGrounded()
+        {
+            float extraHeight = 0.3f;
+
+            RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, extraHeight, platformLayerMask);
+            return raycastHit.collider != null;
+        }
+
+        public void PickUpKey()
+        {            
+            Debug.Log("Player picked up the key");
+            scoreController.IncrementScore(10);
+            SoundManager.Instance.Play(Sounds.KeyPickup);
         }
 
         public void KillPlayer()
         {
+            isDead = true;
             Debug.Log("Player Killed");
-            ReloadLevel();
+            animator.SetTrigger("Death");
+            SoundManager.Instance.Play(Sounds.PlayerDeath);
+
+            gameOverController.Invoke("GameOver", 1f);
         }
 
-        private void ReloadLevel()
+        public void LevelComplete()
         {
-            SceneManager.LoadScene(0);
-        }
-        private void Update() {
-            horizontal = Input.GetAxisRaw("Horizontal");
-            vertical = Input.GetAxisRaw("Vertical");
-
-            PlayerMoving(horizontal, vertical);
-            PlayerCrouchMovement();
-            PlayerMovementAnimation(horizontal, vertical);
+            Debug.Log("Level Complete");
+            gameCompleteMenuController.LevelComplete();
         }
 
-        void PlayerMoving(float horizontal, float vertical) 
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            //Move character horizontally
-            Vector3 position = transform.position;
-
-            // speed = distance / time;      time.deltaTime = 1 / Frames per second
-            position.x = position.x + horizontal * speed * Time.deltaTime;
-            transform.position = position; 
-        }
-
-        void PlayerMovementAnimation(float horizontal, float vertical) 
-        {
-            animator.SetFloat("Speed", Mathf.Abs(horizontal));
-            
-            Vector3 scale = transform.localScale;
-            
-            if(horizontal < 0) 
-            {
-                scale.x = -1f * Mathf.Abs(scale.x);
-            } 
-            else if(horizontal > 0) 
-            {
-                scale.x = Mathf.Abs(scale.x);
-            }
-            transform.localScale = scale;
-
-            if(!(vertical < 0)) {
-                animator.SetBool("Jump", false);
-
-            }
-        }
-
-        void PlayerCrouchMovement() 
-        {
-        if(Input.GetKeyDown(KeyCode.RightControl)) 
-        {
-            animator.SetBool("Crouch", true);
-        }
-        else if(Input.GetKeyUp(KeyCode.RightControl)) 
-        {
-            animator.SetBool("Crouch", false);
-        }
-    }
-
-        void OnCollisionStay2D(Collision2D collisionInfo)
-        {
-            //Move character vertically
-            if(vertical > 0) {
-                animator.SetBool("Jump", true);
-                rb.AddForce(new Vector2(0f, jump), ForceMode2D.Force);
-            }
-        }
-
-        private void OnCollisionEnter2D(Collision2D collision) 
-        {
-            if(collision.gameObject.CompareTag("Death")) 
+            if ((collision.gameObject.CompareTag("Death")) || collision.gameObject.GetComponent<PlayerController>() != null)
             {
                 Debug.Log("Player Died");
+                SoundManager.Instance.Play(Sounds.PlayerDeath);
                 Destroy(gameObject);
-                LevelManager.instance.Respawn();
+                RespawnLevel.instance.Respawn();
             }
-        }   
+        }
+
+        public void MovementSound()
+        {
+            SoundManager.Instance.Play(Sounds.PlayerMove);
+        }
+
+        public void JumpSound()
+        {
+            SoundManager.Instance.Play(Sounds.PlayerJump);
+        }
     }
 }

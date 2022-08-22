@@ -1,56 +1,40 @@
-﻿using System.Collections;
-using UnityEngine;
-using playerMovement;
+﻿using UnityEngine;
 
-/// <summary>
-/// Player Death animation applied when the player touches the enemy.
-/// Added enemy patrol
-/// </summary>
 public class EnemyController : MonoBehaviour
 {
-    Animator animator;
-    public PlayerController playerController;
+    public HealthController healthController;
 
-    [SerializeField] private float walkSpeed;
-    private bool mustPatrol = true;
+    public float walkSpeed;
     public float distance;
-    public Transform groundDetection;
+    public bool moveRight = true;
+    public Transform groundDetectionPoint;
 
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            healthController.LoseLife();
+        }
+    }
+
+    private void Update()
     {
         transform.Translate(Vector2.right * walkSpeed * Time.deltaTime);
 
-        RaycastHit2D groundInfo = Physics2D.Raycast(groundDetection.position, Vector2.down, distance);
-        if(groundInfo.collider == false)
+        RaycastHit2D groundInfo = Physics2D.Raycast(groundDetectionPoint.position, Vector2.down, distance);
+
+        if (!groundInfo.collider)
         {
-            if(mustPatrol == true)
+            if (moveRight)
             {
                 transform.eulerAngles = new Vector3(0, -180, 0);
-                mustPatrol = false;
+                moveRight = false;
             }
             else
             {
                 transform.eulerAngles = new Vector3(0, 0, 0);
-                mustPatrol = true;
+                moveRight = true;
             }
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.GetComponent<PlayerController>() != null)
-        {
-            animator = collision.gameObject.GetComponent<Animator>();
-            if (playerController != null)
-            {
-                StartCoroutine(PlayDeathCoroutine());
-            }
-        }
-    }
-    IEnumerator PlayDeathCoroutine()
-    {
-        animator.Play("Player_Death");
-        yield return new WaitForSeconds(0.60f);
-        playerController.KillPlayer();
     }
 }
