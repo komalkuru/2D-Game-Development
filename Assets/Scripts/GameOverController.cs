@@ -1,12 +1,14 @@
 ﻿using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameOverController : MonoBehaviour
 {
 
     public Button restartButton;
     public Button backButton;
+    [SerializeField] private GameObject gameOver;
 
     private void Awake()
     {

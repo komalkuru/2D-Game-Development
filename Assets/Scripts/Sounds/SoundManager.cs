@@ -30,14 +30,14 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        SetVolume(0.5f);
+        SetVolume(1f);
         PlayBgMusic(Sounds.BackgroundMusic);
     }
     
     public void SetVolume(float volume)
     {
-        //Volume = volume;
-        //soundEffect.volume = Volume;
+        Volume = volume;
+        soundEffect.volume = Volume;
         soundMusic.volume = volume;
     }
     public void Mute(bool status)
@@ -100,5 +100,6 @@ public enum Sounds
     PlayerDeath,
     EnemyCollision,
     KeyPickup,
+    AcidPoolJump,
     LevelWin
 }

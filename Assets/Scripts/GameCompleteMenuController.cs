@@ -5,12 +5,12 @@ using UnityEngine.UI;
 public class GameCompleteMenuController : MonoBehaviour
 {
     public Button nextButton;
-    public Button backButton;
+    public Button menuButton;
 
     private void Awake()
     {
         nextButton.onClick.AddListener(NextLevel);
-        backButton.onClick.AddListener(BackToLobby);
+        menuButton.onClick.AddListener(BackToLobby);
     }
     public void LevelComplete()
     {

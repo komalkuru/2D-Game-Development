@@ -7,7 +7,6 @@ using Assests.Scripts.Level;
 /// </summary>
 public class RespawnLevel : MonoBehaviour
 {
-    LevelManager levelManager;
     public static RespawnLevel instance;
     public Transform respawnPoint;
     public GameObject playerPrefab;

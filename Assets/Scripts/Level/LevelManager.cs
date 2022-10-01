@@ -36,11 +36,12 @@ namespace Assests.Scripts.Level
             int currentSceneIndex = Array.FindIndex(Levels, level => level == SceneManager.GetActiveScene().name);
             SetLevelStatus(Levels[currentSceneIndex], LevelStatus.Completed);
             int nextSceneIndex = currentSceneIndex + 1;
-            Debug.Log("index incresed by 1");
+            Debug.Log(nextSceneIndex);
+            //Debug.Log("index incresed by 1");
 
             if (nextSceneIndex < Levels.Length)
             {
-                Debug.Log("Going on next scene");
+                //Debug.Log("Going on next scene");
                 SetLevelStatus(Levels[nextSceneIndex], LevelStatus.Unlocked);
             }
         }
@@ -56,5 +57,4 @@ namespace Assests.Scripts.Level
             Debug.Log("Setting Level:" + level + " Status: " + levelStatus);
         }
     }
-
 }
