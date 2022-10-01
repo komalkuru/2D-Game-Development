@@ -15,6 +15,7 @@ namespace playerMovement
 
         private bool isCrouch = false;
         public bool isDead = false;
+        public bool isInAcid = false;
 
         private Rigidbody2D rb2d;
         private BoxCollider2D boxCollider;
@@ -38,8 +39,13 @@ namespace playerMovement
                 PlayerJump(horizontal, vertical);
                 Crouch();
             }
+
+            if(isInAcid)
+            {
+                AcidDeath();
+            }
         }
-         
+
         private void PlayerJump(float horizontal, float vertical)
         {
                           
@@ -80,7 +86,7 @@ namespace playerMovement
 
         private void Crouch()
         {
-            isCrouch = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl));
+            isCrouch = (Input.GetKey(KeyCode.E));
             if (isCrouch)
             {
                 animator.SetBool("Crouch", true);
@@ -138,9 +144,17 @@ namespace playerMovement
             SoundManager.Instance.Play(Sounds.PlayerMove);
         }
 
-        public void JumpSound()
+        private void JumpSound()
         {
             SoundManager.Instance.Play(Sounds.PlayerJump);
+        }
+
+        public void AcidDeath()
+        {
+            animator.SetTrigger("AcidDeath");
+            SoundManager.Instance.Play(Sounds.AcidPoolJump);
+            RespawnLevel.instance.Respawn();
+            isInAcid = false;
         }
     }
 }

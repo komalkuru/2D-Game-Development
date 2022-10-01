@@ -6,7 +6,7 @@ public class HealthController: MonoBehaviour
 {
     public PlayerController playerController;
     public Image[] livesCount;
-    private int livesRemaining = 3;
+    private int livesRemaining = 5;
 
     public void LoseLife()
     {
